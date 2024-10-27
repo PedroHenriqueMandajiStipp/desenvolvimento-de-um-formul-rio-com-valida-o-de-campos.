@@ -10,78 +10,102 @@ Nome:Yan Vitor nº:21 Turma: 3-i-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formulário de Cadastro</title>
 <style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #4b0082; /* Fundo roxo */
-    font-family: Arial, sans-serif;
-  }
-
   form {
-    background: #fff;
-    padding: 25px;
     max-width: 400px;
+    margin: 0 auto;
+  }
+  input[type="text"], input[type="date"], input[type="password"], input[type="number"] {
     width: 100%;
-    border-radius: 12px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
-  }
-
-  form:hover {
-    transform: scale(1.02);
-  }
-
-  label {
-    font-size: 0.95rem;
-    color: #333;
-    font-weight: 600;
-    display: block;
-    margin-top: 10px;
-  }
-
-  input[type="text"],
-  input[type="date"],
-  input[type="password"],
-  input[type="number"] {
-    width: 100%;
-    padding: 12px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #f9f9f9;
-    transition: border-color 0.3s ease;
-  }
-
-  input[type="text"]:focus,
-  input[type="date"]:focus,
-  input[type="password"]:focus,
-  input[type="number"]:focus {
-    border-color: #928dab;
-    box-shadow: 0px 0px 5px rgba(146, 141, 171, 0.5);
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background: #7b1fa2; /* Botão roxo */
-    color: #fff;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-
-  button:hover {
-    background: #4a148c;
-    transform: scale(1.03);
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
   }
 </style>
+<script>
+  // Função para formatar o nome com a primeira letra em maiúsculo
+  function formatarNome(input) {
+    let palavras = input.value.toLowerCase().split(" ");
+    for (let i = 0; i < palavras.length; i++) {
+      if (palavras[i]) {
+        palavras[i] = palavras[i][0].toUpperCase() + palavras[i].substring(1);
+      }
+    }
+    input.value = palavras.join(" ");
+  }
+
+  // Função para calcular idade
+  function calcularIdade() {
+    const dataNascimento = new Date(document.getElementById("dataNascimento").value);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mes = hoje.getMonth() - dataNascimento.getMonth();
+    if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+      idade--;
+    }
+    document.getElementById("idade").value = idade;
+  }
+
+  // Validação do CPF
+  function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ''); // Remove qualquer caractere não numérico
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+    let soma = 0;
+    for (let i = 0; i < 9; i++) {
+      soma += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i++) {
+      soma += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.charAt(10));
+  }
+
+  // Máscara para CPF
+  function mascaraCPF(input) {
+    input.value = input.value.replace(/\D/g, "")
+                             .replace(/(\d{3})(\d)/, "$1.$2")
+                             .replace(/(\d{3})(\d)/, "$1.$2")
+                             .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+
+  // Máscara para telefone
+  function mascaraTelefone(input) {
+    input.value = input.value.replace(/\D/g, "")
+                             .replace(/(\d{2})(\d)/, "($1) $2")
+                             .replace(/(\d{5})(\d{4})$/, "$1-$2");
+  }
+
+  // Validação da senha
+  function validarSenha() {
+    const senha = document.getElementById("senha").value;
+    const confirmacao = document.getElementById("confirmacaoSenha").value;
+    if (senha !== confirmacao) {
+      alert("As senhas não coincidem.");
+      return false;
+    }
+    return true;
+  }
+
+  // Validação do formulário antes de enviar
+  function validarFormulario(event) {
+    if (!validarCPF(document.getElementById("cpf").value)) {
+      alert("CPF inválido.");
+      event.preventDefault();
+      return;
+    }
+    if (!validarSenha()) {
+      event.preventDefault();
+      return;
+    }
+  }
+</script>
 </head>
 <body>
   <form onsubmit="validarFormulario(event)">
@@ -113,3 +137,4 @@ Nome:Yan Vitor nº:21 Turma: 3-i-->
   </form>
 </body>
 </html>
+
